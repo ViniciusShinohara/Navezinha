@@ -7,18 +7,19 @@ function startGame() {
 
 var myGameArea = {
     canvas: document.createElement("canvas"), // Cria um novo elemento canvas
-    start: function() { 
+    start: function() {
         this.canvas.width = 600;
-        this.canvas.height = 600; 
-        this.context = this.canvas.getContext("2d"); 
+        this.canvas.height = 600;
+        this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]); // Insere o canvas no corpo do documento HTML
         this.interval = setInterval(updateGameArea, 20); // Inicia um intervalo para atualizar a área de jogo a cada 20 milissegundos
     },
     clear: function() { // Método para limpar o canvas
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height); 
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
 }
 
-function component(width, height, imageSrc, x, y) { 
+function component(width, height, imageSrc, x, y) {
     this.width = width; // Largura do componente
     this.height = height; // Altura do componente
     this.x = x; // Posição x do componente
@@ -67,3 +68,4 @@ document.addEventListener("keydown", function(event) {
 
 // Inicia o jogo ao carregar a página
 window.onload = startGame;
+
