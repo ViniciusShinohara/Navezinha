@@ -2,13 +2,24 @@
 var canvas;
 var ctx;
 
-// Objeto da nave
+// Objeto da nave aliada
 var nave = {
     width: 90,
     height: 80,
     x: 275,
     y: 500,
     speed: 5,
+    image: new Image(),
+};
+
+// Objeto da nave inimiga
+var naveInimiga = {
+    width: 120,
+    height: 90,
+    x: 255, // Posição inicial no centro do canvas
+    y: 50, // Posição inicial no topo do canvas
+    speed: 2,
+    direction: 1, // 1 para direita, -1 para esquerda
     image: new Image(),
 };
 
@@ -27,6 +38,7 @@ function startGame() {
     // Carregar imagens
     nave.image.src = "imagens/navealiada.jpg";
     fundo.image.src = "imagens/fundo.jpg";
+    naveInimiga.image.src = "imagens/naveinimiga.png";
 
     // Iniciar o loop do jogo
     setInterval(updateGameArea, 20);
@@ -36,6 +48,7 @@ function startGame() {
 function updateGameArea() {
     clearCanvas();
     updateFundo();
+    updateNaveInimiga(); // Atualiza a posição da nave inimiga
     updateNave();
 }
 
@@ -54,39 +67,22 @@ function updateFundo() {
     ctx.drawImage(fundo.image, 0, fundo.posY, canvas.width, canvas.height);
 }
 
-// Função para atualizar a nave
+// Função para atualizar a nave aliada
 function updateNave() {
     ctx.drawImage(nave.image, nave.x, nave.y, nave.width, nave.height);
 }
 
-// Função para movimentar a nave para a esquerda
-function moveLeft() {
-    nave.x -= nave.speed;
-    if (nave.x < 0) {
-        nave.x = 0;
+// Função para atualizar a nave inimiga
+function updateNaveInimiga() {
+    naveInimiga.x += naveInimiga.speed * naveInimiga.direction;
+
+    // Verifica se a nave inimiga ultrapassou os limites do canvas
+    if (naveInimiga.x <= 0 || naveInimiga.x + naveInimiga.width >= canvas.width) {
+        naveInimiga.direction *= -1;
     }
+
+    ctx.drawImage(naveInimiga.image, naveInimiga.x, naveInimiga.y, naveInimiga.width, naveInimiga.height);
 }
-
-// Função para movimentar a nave para a direita
-function moveRight() {
-    nave.x += nave.speed;
-    if (nave.x > canvas.width - nave.width) {
-        nave.x = canvas.width - nave.width;
-    }
-}
-
-// Event listeners para teclas pressionadas
-document.addEventListener("keydown", function(event) {
-    if (event.key === "ArrowLeft") {
-        moveLeft();
-    } else if (event.key === "ArrowRight") {
-        moveRight();
-    }
-});
-
-// Iniciar o jogo ao carregar a página
-window.onload = startGame;
-
 
 // Função para movimentar a nave para a esquerda
 function moveLeft() {
@@ -127,14 +123,16 @@ function disparaTiro() {
     moveTiro();
 }
 
-// Event listener para a tecla de espaço
+// Event listeners para teclas pressionadas
 document.addEventListener("keydown", function(event) {
-    if (event.key === " ") {
-        // Quando a tecla de espaço for pressionada, dispara um tiro
-        disparaTiro();
-    } else if (event.key === "ArrowLeft") {
+    if (event.key === "ArrowLeft") {
         moveLeft();
     } else if (event.key === "ArrowRight") {
         moveRight();
+    } else if (event.key === " ") {
+        disparaTiro();
     }
 });
+
+// Iniciar o jogo ao carregar a página
+window.onload = startGame;
