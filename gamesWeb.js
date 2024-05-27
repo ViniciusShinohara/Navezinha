@@ -1,71 +1,140 @@
+// Variáveis para o canvas e contexto
+var canvas;
+var ctx;
 
-var myGamePiece;
+// Objeto da nave
+var nave = {
+    width: 90,
+    height: 80,
+    x: 275,
+    y: 500,
+    speed: 5,
+    image: new Image(),
+};
 
+// Objeto do fundo
+var fundo = {
+    image: new Image(),
+    posY: 0,
+    velocidade: 1,
+};
+
+// Função para iniciar o jogo
 function startGame() {
-    myGamePiece = new component(30, 50, "imagens/navealiada.jpg", 285, 530); // Nave fixa no centro inferior do canvas
-    myGameArea.start();
+    canvas = document.getElementById("gameCanvas");
+    ctx = canvas.getContext("2d");
+
+    // Carregar imagens
+    nave.image.src = "imagens/navealiada.jpg";
+    fundo.image.src = "imagens/fundo.jpg";
+
+    // Iniciar o loop do jogo
+    setInterval(updateGameArea, 20);
 }
 
-var myGameArea = {
-    canvas: document.createElement("canvas"), // Cria um novo elemento canvas
-    start: function() {
-        this.canvas.width = 600;
-        this.canvas.height = 600;
-        this.context = this.canvas.getContext("2d");
-        document.body.insertBefore(this.canvas, document.body.childNodes[0]); // Insere o canvas no corpo do documento HTML
-        this.interval = setInterval(updateGameArea, 20); // Inicia um intervalo para atualizar a área de jogo a cada 20 milissegundos
-    },
-    clear: function() { // Método para limpar o canvas
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-}
-
-function component(width, height, imageSrc, x, y) {
-    this.width = width; // Largura do componente
-    this.height = height; // Altura do componente
-    this.x = x; // Posição x do componente
-    this.y = y; // Posição y do componente
-    this.image = new Image(); // Cria um novo objeto Image para representar a imagem do componente
-    this.image.src = imageSrc; // Define o caminho da imagem do componente
-    this.update = function() { // Método para atualizar e desenhar o componente
-        ctx = myGameArea.context; // Obtém o contexto 2D do canvas
-        ctx.drawImage(this.image, this.x, this.y, this.width, this.height); // Desenha a imagem do componente no canvas
-    }
-}
-
+// Função para atualizar o jogo
 function updateGameArea() {
-    myGameArea.clear();
-    myGamePiece.update();
+    clearCanvas();
+    updateFundo();
+    updateNave();
 }
 
-function movimentandoNaveTeclado(tecla) {
-    myGameArea.clear();
-    if (tecla == 65) { // Tecla A para mover para a esquerda
-        myGamePiece.x -= 50;
-        myGamePiece.x = Math.max(0, myGamePiece.x); // Garante que a nave não saia da borda esquerda do canvas
-    } else if (tecla == 68) { // Tecla D para mover para a direita
-        myGamePiece.x += 50;
-        myGamePiece.x = Math.min(myGameArea.canvas.width - myGamePiece.width, myGamePiece.x); // Garante que a nave não saia da borda direita do canvas
-    } else if (tecla == 32) { // Barra de espaço para disparar
-        disparaTiro(myGamePiece.x + myGamePiece.width / 2 - 1, myGamePiece.y);
+// Função para limpar o canvas
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Função para atualizar o fundo
+function updateFundo() {
+    fundo.posY += fundo.velocidade;
+    if (fundo.posY > canvas.height) {
+        fundo.posY = 0;
     }
-    myGamePiece.update();
+    ctx.drawImage(fundo.image, 0, fundo.posY - canvas.height, canvas.width, canvas.height);
+    ctx.drawImage(fundo.image, 0, fundo.posY, canvas.width, canvas.height);
 }
 
-function disparaTiro(col, lin) {
-    if (lin > -6) { // Continua a mover o tiro para cima enquanto ele estiver visível no canvas
-        ctx.clearRect(col, lin, 2, 5); // Limpa a área onde o tiro estava desenhado anteriormente
-        ctx.fillRect(col, lin - 6, 2, 5); // Desenha o tiro um pouco mais acima
-        setTimeout(function() {
-            disparaTiro(col, lin - 6); // Chama recursivamente a função para mover o tiro
-        }, 50); // Ajusta o intervalo de tempo para mover o tiro (50 milissegundos)
+// Função para atualizar a nave
+function updateNave() {
+    ctx.drawImage(nave.image, nave.x, nave.y, nave.width, nave.height);
+}
+
+// Função para movimentar a nave para a esquerda
+function moveLeft() {
+    nave.x -= nave.speed;
+    if (nave.x < 0) {
+        nave.x = 0;
     }
 }
 
-// Adiciona um listener para o evento de pressionar tecla
+// Função para movimentar a nave para a direita
+function moveRight() {
+    nave.x += nave.speed;
+    if (nave.x > canvas.width - nave.width) {
+        nave.x = canvas.width - nave.width;
+    }
+}
+
+// Event listeners para teclas pressionadas
 document.addEventListener("keydown", function(event) {
-    movimentandoNaveTeclado(event.keyCode);
+    if (event.key === "ArrowLeft") {
+        moveLeft();
+    } else if (event.key === "ArrowRight") {
+        moveRight();
+    }
 });
 
-// Inicia o jogo ao carregar a página
+// Iniciar o jogo ao carregar a página
 window.onload = startGame;
+
+
+// Função para movimentar a nave para a esquerda
+function moveLeft() {
+    nave.x -= nave.speed;
+    if (nave.x < 0) {
+        nave.x = 0;
+    }
+}
+
+// Função para movimentar a nave para a direita
+function moveRight() {
+    nave.x += nave.speed;
+    if (nave.x > canvas.width - nave.width) {
+        nave.x = canvas.width - nave.width;
+    }
+}
+
+// Função para disparar tiros
+function disparaTiro() {
+    // Define a posição inicial do tiro
+    var tiroX = nave.x + nave.width / 2;
+    var tiroY = nave.y;
+
+    // Cria uma função para mover o tiro
+    function moveTiro() {
+        ctx.clearRect(tiroX, tiroY, 2, 5); // Limpa a área onde o tiro estava desenhado anteriormente
+        tiroY -= 6; // Move o tiro para cima
+        ctx.fillRect(tiroX, tiroY, 2, 5); // Desenha o tiro um pouco mais acima
+
+        // Verifica se o tiro saiu da tela
+        if (tiroY > 0) {
+            // Continua movendo o tiro
+            requestAnimationFrame(moveTiro);
+        }
+    }
+
+    // Chama a função para mover o tiro
+    moveTiro();
+}
+
+// Event listener para a tecla de espaço
+document.addEventListener("keydown", function(event) {
+    if (event.key === " ") {
+        // Quando a tecla de espaço for pressionada, dispara um tiro
+        disparaTiro();
+    } else if (event.key === "ArrowLeft") {
+        moveLeft();
+    } else if (event.key === "ArrowRight") {
+        moveRight();
+    }
+});
