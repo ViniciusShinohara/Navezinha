@@ -1,3 +1,4 @@
+
 var myGamePiece;
 
 function startGame() {
@@ -39,13 +40,13 @@ function updateGameArea() {
 
 function movimentandoNaveTeclado(tecla) {
     myGameArea.clear();
-    if (tecla == 90) { // Tecla Z para mover para a esquerda
+    if (tecla == 65) { // Tecla A para mover para a esquerda
         myGamePiece.x -= 50;
         myGamePiece.x = Math.max(0, myGamePiece.x); // Garante que a nave não saia da borda esquerda do canvas
-    } else if (tecla == 67) { // Tecla C para mover para a direita
+    } else if (tecla == 68) { // Tecla D para mover para a direita
         myGamePiece.x += 50;
         myGamePiece.x = Math.min(myGameArea.canvas.width - myGamePiece.width, myGamePiece.x); // Garante que a nave não saia da borda direita do canvas
-    } else if (tecla == 40) { // Seta para baixo para disparar
+    } else if (tecla == 32) { // Barra de espaço para disparar
         disparaTiro(myGamePiece.x + myGamePiece.width / 2 - 1, myGamePiece.y);
     }
     myGamePiece.update();
@@ -68,4 +69,3 @@ document.addEventListener("keydown", function(event) {
 
 // Inicia o jogo ao carregar a página
 window.onload = startGame;
-
