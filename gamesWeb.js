@@ -14,8 +14,8 @@ var nave = {
 
 // Objeto da nave inimiga
 var naveInimiga = {
-    width: 120,
-    height: 90,
+    width: 90,
+    height: 80,
     x: 255, // Posição inicial no centro do canvas
     y: 50, // Posição inicial no topo do canvas
     speed: 2,
@@ -111,6 +111,13 @@ function disparaTiro() {
         ctx.clearRect(tiroX, tiroY, 2, 5); // Limpa a área onde o tiro estava desenhado anteriormente
         tiroY -= 6; // Move o tiro para cima
         ctx.fillRect(tiroX, tiroY, 2, 5); // Desenha o tiro um pouco mais acima
+
+        // Verifica colisão com a nave inimiga
+        if (tiroX >= naveInimiga.x && tiroX <= naveInimiga.x + naveInimiga.width &&
+            tiroY >= naveInimiga.y && tiroY <= naveInimiga.y + naveInimiga.height) {
+            alert("Você ganhou!");
+            return;
+        }
 
         // Verifica se o tiro saiu da tela
         if (tiroY > 0) {
